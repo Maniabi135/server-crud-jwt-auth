@@ -8,9 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const token_check_1 = require("./token-check");
 const express = require("express");
 const database_1 = require("./database");
 const user_model_1 = require("./models/user-model");
+const jwt = require("jsonwebtoken");
+const key_file_1 = require("./key-file");
 const hostname = 'localhost';
 const port = 3000;
 const server = express();
@@ -21,7 +24,22 @@ const mysequelize = database_1.sequelize;
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
-server.get('/getUser', (req, res, next) => {
+server.post('/login', (req, res, next) => {
+    const user = {
+        username: req.body.username,
+        password: req.body.password
+    };
+    const users = {
+        username: 'mani',
+        password: 'anand'
+    };
+    jwt.sign({ users }, key_file_1.supertoken.secret, (err, token) => {
+        res.json({
+            token
+        });
+    });
+});
+server.get('/getUser', token_check_1.verifyToken, (req, res, next) => {
     user_model_1.User.findAll().then((data) => {
         return res.json(data);
     }).catch((err) => {
