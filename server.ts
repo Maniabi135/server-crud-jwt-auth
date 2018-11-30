@@ -28,12 +28,17 @@ server.post('/login',(req, res, next) => {
     };
     const users = {
         username: 'mani',
-        password: 'anand'
+        password: ''
     }
     jwt.sign({users}, supertoken.secret, (err, token) => {
-        res.json({
-            token
-        })
+        if( err ) {
+            res.sendStatus(403);
+        }
+        else {
+            res.json({
+                token            
+            })
+        }
     });
 })
 server.get('/getUser', verifyToken, (req, res, next) => {

@@ -31,15 +31,31 @@ server.post('/login', (req, res, next) => {
     };
     const users = {
         username: 'mani',
-        password: 'anand'
+        password: ''
     };
     jwt.sign({ users }, key_file_1.supertoken.secret, (err, token) => {
-        res.json({
-            token
-        });
+        if (err) {
+            res.sendStatus(403);
+        }
+        else {
+            res.json({
+                token
+            });
+        }
     });
 });
 server.get('/getUser', token_check_1.verifyToken, (req, res, next) => {
+    jwt.verify(req.token, key_file_1.supertoken.secret, (err, authData) => {
+        if (err) {
+            res.sendStatus(403);
+        }
+        else {
+            res.json({
+                message: 'get User updated',
+                authData
+            });
+        }
+    });
     user_model_1.User.findAll().then((data) => {
         return res.json(data);
     }).catch((err) => {
